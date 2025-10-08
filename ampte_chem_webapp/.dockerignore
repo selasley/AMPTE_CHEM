@@ -1,0 +1,5 @@
+.git
+.venv
+.DS_Store
+*Dockerfile*
+*docker-compose*

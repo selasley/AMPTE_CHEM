@@ -1,0 +1,8 @@
+astropy==7.1.0
+bottleneck==1.6.0
+jupyterlab==4.4.9
+numba==0.62.1
+numexpr==2.13.1
+numpy==2.3.3
+pandas==2.3.3
+tables==3.10.2

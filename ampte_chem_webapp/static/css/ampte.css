@@ -1,0 +1,42 @@
+.stTextInput>label {
+    min-height: 1rem;
+    margin: 0;
+    padding: 0;
+}
+.stTextInput>div {
+    max-height: 1.8rem;
+}
+.stButton>button {
+    color: chocolate;
+    height: 1.6rem;
+    padding: 4px;
+    margin-top: 12px;
+}
+.stButton>div>div>div>div>button {
+    color: chocolate;
+    height: 1.6rem;
+    padding: 4px;
+}
+.e1tzin5v0 {
+    row-gap: 8px;
+}
+.stSelectbox>div>div>div{
+    height: 1.5rem;
+    padding: 0px 4px 2px 4px;
+    margin: 0;
+}
+.stSelectbox>label {
+    margin-bottom: 0;
+}
+/*.stCheckbox {*/
+/*    background-color: deeppink;*/
+/*}*/
+/*.stMarkdown>div>p {*/
+/*    background-color:lightpink;*/
+/*    padding: 0;*/
+/*}*/
+/*.streamlit-expander {*/
+/*    max-height: 1.6rem;*/
+/*    padding: 2px;*/
+/*    margin: 0;*/
+/*}*/
