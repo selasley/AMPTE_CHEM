@@ -3,6 +3,7 @@
 import datetime as dt
 import multiprocessing as mp
 import subprocess as sp
+import sys
 import time
 from pathlib import Path
 
@@ -12,22 +13,32 @@ import pandas as pd
 from ampte_fits import read_fits_file_no_cal, read_fits_rates, \
     get_hk, add_kp_dst, calculate_range_counts, read_fits_file_only_cal, get_me
 
-# must use fork on macos
+# must use fork with multiprocessing in macos
 mp.set_start_method('fork')
 
-idx = pd.IndexSlice
-_ampte_path = Path('/Users/selasley/Documents/AMPTE')
-_pha_nocal_file = _ampte_path / 'AMPTE_CHEM_nocal_pha.h5'
-_epoch = np.datetime64('1966-01-01')
-_pap = np.array([np.nan, np.nan, 14.0, 15.3, 17.0, 18.8, 21.9, 24.1])
-_pap = dict(zip(range(-1, len(_pap)), _pap))
+# _epoch = np.datetime64('1966-01-01')
+# _pap = np.array([np.nan, np.nan, 14.0, 15.3, 17.0, 18.8, 21.9, 24.1])
+# _pap = dict(zip(range(-1, len(_pap)), _pap))
 
 _num_processes = 10
 
-_apl_data_files = Path("./apl_data_files")
+# Path to the directory containing the gzipped FITS files from the AMPTE
+# CCE Data Center.  Adjust as needed to point to the directory on your 
+# system that contains the files.
+_apl_data_files = Path("./apl_data_files").resolve()
 if not _apl_data_files.exists():
-    _apl_data_files.mkdir()
+    print(f'''Unable to proceed because the path to the APL FITS files, 
+    {_apl_data_files}, was not found.  Either place the APL FITS files in
+    {_apl_data_files} or update _apl_data_files near the top of this 
+    script to point to the directory containing the files.''')
+    sys.exit(1)
+if not any(_apl_data_files.rglob('198*fits.gz', recurse_symlinks=True)):
+    print(f'''Unable to proceed because no APL FITS files found in {_apl_data_files}.
+    Either place the APL FITS files in {_apl_data_files} or update _apl_data_files
+    near the top of this script to point to the directory containing the files.''')
+    sys.exit(1)
 
+# Path to the directory where the hdf data files will be created
 _hdf_data_files = Path("./awa_data")
 if not _hdf_data_files.exists():
     _hdf_data_files.mkdir()
@@ -42,7 +53,7 @@ def create_ampte_chem_nocal_phas(files: list[Path]=None,
     SpinStartTime, PAPS_lvl, DPU_Mode, TAC_Slope, PHA_Priority, L, MLTH, Voltage_Step,
     and Sector data
     """
-    files = files or sorted(_apl_data_files.glob('198*fits.gz'))
+    files = files or sorted(_apl_data_files.rglob('198*fits.gz', recurse_symlinks=True))
     try:
         # remove days 320 - 325 that have strange PHAs
         for doy in range(320, 326):
@@ -78,7 +89,8 @@ def create_ampte_chem_nocal_phas(files: list[Path]=None,
     print(f'{dt.datetime.now():%F %T}: index created {h5file.stat().st_size:_}')
 
 
-def create_ampte_chem_cal_phas(h5file: Path=_hdf_data_files / 'AMPTE_CHEM_cal_pha.h5'):
+def create_ampte_chem_cal_phas(files: list[Path]=None,
+                               h5file: Path=_hdf_data_files / 'AMPTE_CHEM_cal_pha.h5'):
     """
     Create a blosc compressed hdf5 file containing only spins with cshk > 0,
     i.e., only calibration times, and including the time period
@@ -86,7 +98,7 @@ def create_ampte_chem_cal_phas(h5file: Path=_hdf_data_files / 'AMPTE_CHEM_cal_ph
     SpinStartTime, PAPS_lvl, DPU_Mode, TAC_Slope, PHA_Priority, L, MLTH, Voltage_Step,
     and Sector data
     """
-    files = sorted(_apl_data_files.glob('198*fits.gz'))
+    files = files or sorted(_apl_data_files.rglob('198*fits.gz', recurse_symlinks=True))
     h5file.unlink(missing_ok=True)
     pool_chunk_size = 40
     print(f'{pool_chunk_size} {dt.datetime.now():%F %T}')
@@ -136,7 +148,7 @@ def create_ampte_chem_rates_dst_file(files: list[Path]=None,
     rates_dst_file.unlink(missing_ok=True)
     repack_file = _hdf_data_files / 'AMPTE_CHEM_rates_dst_repack.h5'
     repack_file.unlink(missing_ok=True)
-    files = files or sorted(_apl_data_files.glob('198*fits.gz'))
+    files = files or sorted(_apl_data_files.rglob('198*fits.gz', recurse_symlinks=True))
     pool_chunk_size = 40  # 120  can't use E>0 filter so 120 days gets too many PHAs
     print(f'{pool_chunk_size} {dt.datetime.now():%F %T}')
     # with pd.HDFStore(h5file, complib='blosc:zstd', expectedrows=20_255_351) as store:
@@ -190,7 +202,7 @@ def create_ampte_chem_hk_dst_file(files: list[Path] = None,
     Create a blosc compressed hdf5 file containing SpinStartTime, housekeeping and space
     environment data with a RangeIndex
     """
-    files = files or sorted(_apl_data_files.glob('198*fits.gz'))
+    files = files or sorted(_apl_data_files.rglob('198*fits.gz', recurse_symlinks=True))
     h5file.unlink(missing_ok=True)
     ndxcols = ['SpinStartTime', 'PAPS_lvl', 'DPU_Mode', 'TAC_Slope',
                'PHA_Priority', 'L', 'MLTH', 'MAGLAT', 'MAGLON']
@@ -226,7 +238,7 @@ def create_ampte_chem_hk_dst_file(files: list[Path] = None,
 def create_ampte_chem_me_file(files: list[Path] = None,
                               h5file: Path = _hdf_data_files / 'AMPTE_CHEM_me.h5'):
     h5file.unlink(missing_ok=True)
-    files = files or sorted(_apl_data_files.glob('198*fits.gz'))
+    files = files or sorted(_apl_data_files.rglob('198*fits.gz', recurse_symlinks=True))
     pool_chunk_size = 120
     print(f'{pool_chunk_size} {dt.datetime.now():%F %T}')
     with pd.HDFStore(h5file, complib='blosc:zstd') as store:
@@ -257,13 +269,17 @@ def create_ampte_chem_me_file(files: list[Path] = None,
 def main():
     print('Creating nocal pha file')
     create_ampte_chem_nocal_phas()
-    print('Creating cal pha file')
-    create_ampte_chem_cal_phas()
-    print('Creating rates_dst file')
+    print('\n\nCreating cal pha file')
+    try:
+        # not all 
+        create_ampte_chem_cal_phas()
+    except KeyError:
+        print('No cal data found in the APL files.')
+    print('\n\nCreating rates_dst file')
     create_ampte_chem_rates_dst_file()
-    print('Creating hk_dst file')
+    print('\n\nCreating hk_dst file')
     create_ampte_chem_hk_dst_file()
-    print('Creating me file')
+    print('\n\nCreating me file')
     create_ampte_chem_me_file()
     # create_ampte_chem_rates_dst_file(sorted(Path('data/').glob('1985_*.fits.gz')))
     # create_ampte_chem_rates_dst_file(sorted(Path('data/').glob('1984_236*.fits.gz')))

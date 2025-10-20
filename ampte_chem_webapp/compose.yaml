@@ -1,0 +1,17 @@
+name: awa
+
+services:
+  awa:
+    build: .
+    image: ampte_chem_webapp
+    ports:
+      - "8501:8501"
+    volumes:
+      - type: bind
+        source: ../awa_data
+        target: /ampte_chem_webapp/data/
+        read_only: true
+    cap_drop:
+      - ALL
+    security_opt:
+      - "no-new-privileges=true"

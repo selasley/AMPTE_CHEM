@@ -1,6 +1,7 @@
 # syntax=docker/dockerfile:1
 
 # parts of this file are from https://hynek.me/articles/docker-uv/
+# and parts from https://pythonspeed.com/articles/root-capabilities-docker-security/
 # start with the uv bookworm-slim image
 FROM ghcr.io/astral-sh/uv:python3.13-bookworm-slim
 

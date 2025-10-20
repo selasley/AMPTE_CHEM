@@ -3,9 +3,9 @@
 
 The AMPTE CHEM WebApp (AWA) uses hdf files containing pulse height data, housekeeping, rates, and matrix element data.  In retrospect hdf may not be the best choice for storing this much data.  HDF was chosen in order to have compressed local files with no need for a database server.
 
-AMPTE CHEM [data files](http://sd-www.jhuapl.edu/AMPTE/chem/data/) are available at the [AMPTE CCE Science Data Center](http://sd-www.jhuapl.edu/AMPTE/) at the Johns Hopkins University Applied Physics Lab.  There are 1480 compressed [FITS](https://heasarc.gsfc.nasa.gov/docs/software/fitsio/) files totaling roughly 11.4GB.  All files should be placed in the apl\_data\_files directory.  Do not place the files in subdirectories for each year.
+AMPTE CHEM [data files](https://helio.data.nasa.gov/dataset/AMPTE-CCE_CHEM_PT1M) are available from the [AMPTE CCE Science Data Center](http://sd-www.jhuapl.edu/AMPTE/) at the Johns Hopkins University Applied Physics Lab.  There are 1480 compressed [FITS](https://heasarc.gsfc.nasa.gov/docs/software/fitsio/) files totaling roughly 11.4GB.  All files, folders containing the files or symlinks to the files/folders should be placed in the apl\_data\_files directory.  If the APL compressed FITS files are in a different directory you need to update the \_apl\_data\_files Path near the top of create\_awa\_hdf\_files.py to point to the directory containing the data.
 
-The python script create\_mission\_hdf\_files.py  creates the hdf files AWA uses from the JHUAPL FITS files.
+The python script create\_awa\_hdf\_files.py  creates the hdf files AWA uses from the JHUAPL FITS files.
 
 
 1. Install [uv](https://docs.astral.sh/uv/) from Astral if it is not installed on your system
@@ -26,14 +26,14 @@ The python script create\_mission\_hdf\_files.py  creates the hdf files AWA uses
 	uv pip install -r requirements.txt
 	</pre>
 
-3. Run the create\_mission\_hdf\_files.py and have a nice cup of tea.  The script takes roughly an hour to create all of the hdf files.
+3. Run the create\_awa\_hdf\_files.py and have a nice cup of tea.  The script takes roughly an hour to create all of the hdf files.
 
-	<pre>python3 create\_mission\_hdf\_files.py</pre>
+	<pre>python3 create_awa_hdf_files.py</pre>
 
 This will create 7 hdf files in the awa\_data directory.  The AMPTE\_CHEM\_cal\_pha.h5 and AMPTE\_CHEM\_rates.h5 files are not used by AWA.
 
-Once the hdf files are created you can run the web app as described in Setup\_AMPTE\_WebApp.md
+Once the hdf files are created you can run the web app by following the directions in Setup\_AMPTE\_WebApp.md
 
-The bottom of the create\_mission\_hdf\_files.ipynb notebook contains information and the first few rows of the hdf files.  View the notebook with [jupyter](https://jupyter.org)
+The bottom of the create\_awa\_hdf\_files.ipynb notebook contains information and the first few rows of the hdf files.  View the notebook with [jupyter](https://jupyter.org)
 	<pre>
 	jupyter lab</pre>
