@@ -1,0 +1,7 @@
+pandas
+nicegui
+isort
+matplotlib
+xlrd
+openpyxl
+pyxlsb

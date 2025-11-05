@@ -1,0 +1,16 @@
+name: geotail
+
+services:
+  geotail_plotter:
+    build: .
+    image: geotail_plotter
+    ports:
+      - "8888:8080"
+    volumes:
+      - type: bind
+        source: app
+        target: /app/
+    cap_drop:
+      - ALL
+    security_opt:
+      - "no-new-privileges=true"
