@@ -1,3 +1,3 @@
 <h1 style="text-align: center">GEOTAIL Plotter</h1>
 
-This repository contains source code for a small [nicegui](https://nicegui.io) python app that uses [pandas]() and [matplotlib](https://matplotlib.org) to generate 2D histogram plots of GEOTAIL/STICS/EPIC PHAs.  The program reads text and excel files containing PHA snd DV step data.  It can draw boxes on the plots with coordinates in "data units" and blocks of text in "figure units", i.e. 0 to 1.
+This repository contains source code for a small [nicegui](https://nicegui.io) python app that uses [pandas](https://pandas.pydata.org) and [matplotlib](https://matplotlib.org) to generate 2D histogram plots of GEOTAIL/STICS/EPIC PHAs.  The program reads text and excel files containing PHA snd DV step data.  It can draw boxes on the plots with coordinates in "data units" and blocks of text in "figure units", i.e. 0 to 1.
